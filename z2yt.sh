@@ -1,7 +1,7 @@
 #!/bin/sh
 echo "\nEnter Title"
-read name
-echo "title: $name" > ./vids/upload.txt
+read NAME
+echo "title: $NAME" > ./vids/upload.txt
 echo "\nEnter Description"
 read description
 echo "description: $description" >> ./vids/upload.txt
