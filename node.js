@@ -7,6 +7,8 @@ const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 
 
+const filePath = `/Users/${process.env.USER}/Documents/Zoom`;
+
 const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
 const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
@@ -32,7 +34,7 @@ notifier.on('click', (object, options) => {
     return;
   }
   let title, description, listing = '';
-  fs.readFile('./vids/upload.txt', (err, data) => {
+  fs.readFile(`${filePath}/upload.txt`, (err, data) => {
     if (err) console.log(err);
     const fields = data.toString().split('\n');
     title = fields[0].slice(7);
@@ -43,7 +45,7 @@ notifier.on('click', (object, options) => {
                  'snippet.description': description,
                  'snippet.title': title,
                  'status.privacyStatus': listing,
-      }, 'mediaFilename': './vids/zoom.mp4'}, videosInsert);
+      }, 'mediaFilename': `${filePath}/zoom.mp4`}, videosInsert);
   });
 });
 
