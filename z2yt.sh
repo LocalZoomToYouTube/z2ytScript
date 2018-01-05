@@ -7,19 +7,19 @@ read description
 echo "description: $description" >> ./vids/upload.txt
 echo ""
 PS3='Enter Listing Choice: '
-options=("Public" "Private" "Unlisted")
+options=("public" "private" "unlisted")
 select opt in "${options[@]}"
 do
     case $opt in
-        "Public")
+        "public")
             echo "\n"
             break
             ;;
-        "Private")
+        "private")
             echo "\n"
             break
             ;;
-        "Unlisted")
+        "unlisted")
             echo "\n"
             break
             ;;
