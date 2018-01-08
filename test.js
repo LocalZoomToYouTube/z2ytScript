@@ -16,20 +16,3 @@ fs.watch(filePath, () => {
   }
 });
 
-
-
-
-// var CronJob = require('cron').CronJob;
-// new CronJob('* * * * * *', function() {
-//   fs.watch(filePath, function(event, fileName) {
-//     if(fileName) {
-//       console.log('Event: ' + event);
-//       console.log(filename + ' File Change ...');
-//       file = fs.readFileSync(filePath);
-//       console.log("File content at: " + new Date() + ' is \n' + file);
-//     }
-//     else{
-//       console.log('filename not provided')
-//     }
-//   });
-// }, null, true, 'America/Los_Angeles');
