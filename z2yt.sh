@@ -1,10 +1,10 @@
 #!/bin/sh
 echo "\nEnter Title"
 read NAME
-echo "title: $NAME" > /Users/$USER/Documents/Zoom/upload.txt
+echo "title: $NAME" > /Users/$USER/.zoom_to_youtube/upload.txt
 echo "\nEnter Description"
 read description
-echo "description: $description" >> /Users/$USER/Documents/Zoom/upload.txt
+echo "description: $description" >> /Users/$USER/.zoom_to_youtube/upload.txt
 echo ""
 PS3='Enter Listing Choice: '
 options=("public" "private" "unlisted")
@@ -26,7 +26,7 @@ do
         *) echo invalid option;;
     esac
 done
-echo "listing: $opt" >> /Users/$USER/Documents/Zoom/upload.txt
+echo "listing: $opt" >> /Users/$USER/.zoom_to_youtube/upload.txt
 
 
 # for i in ./vids/*.mp4; do

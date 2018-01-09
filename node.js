@@ -5,26 +5,44 @@ const readline = require('readline');
 const util = require('util');
 const google = require('googleapis');
 const googleAuth = require('google-auth-library');
+const chokidar = require('chokidar');
 
 
 const filePath = `/Users/${process.env.USER}/Documents/Zoom`;
+const appPath = `/Users/${process.env.USER}/.zoom_to_youtube`;
 
-const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
+const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl'];
 const TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 const TOKEN_PATH = TOKEN_DIR + 'google-apis-nodejs-quickstart.json';
 
 
+
+
 fs.chmodSync('z2yt.sh', '755');
 
-notifier.notify({
-  title: 'Zoom To Youtube',
-  message: 'We noticed you recently recorded a zoom video.  Would you like to upload it to youtube?',
-  actions: "Yes",
-  closeLabel: 'Not This Time',
-  reply: true,
-  sound: true
+if (!fs.existsSync(appPath)) fs.mkdirSync(appPath, 0755);
+
+const watcher = chokidar.watch(filePath, {
+  ignored: /^((?!zoom_0).)*$/g,
+  persistent: true,
+  depth: 2
 });
+
+watcher.on('add', (path) => {
+   if (path.slice(-10) === 'zoom_0.mp4') {
+      fs.createReadStream(path).pipe(fs.createWriteStream(`${appPath}/zoom.mp4`));
+        notifier.notify({
+          title: 'Zoom To Youtube',
+          message: 'We noticed you recently recorded a zoom video.  Would you like to upload it to youtube?',
+          actions: "Yes",
+          closeLabel: 'Not This Time',
+          reply: true,
+          sound: true
+        });
+   }
+});
+
 
 notifier.on('click', (object, options) => {
   const child = spawnSync('sh', ['z2yt.sh'], { stdio: 'inherit' });
@@ -34,7 +52,7 @@ notifier.on('click', (object, options) => {
     return;
   }
   let title, description, listing = '';
-  fs.readFile(`${filePath}/upload.txt`, (err, data) => {
+  fs.readFile(`${appPath}/upload.txt`, (err, data) => {
     if (err) console.log(err);
     const fields = data.toString().split('\n');
     title = fields[0].slice(7);
@@ -45,7 +63,7 @@ notifier.on('click', (object, options) => {
                  'snippet.description': description,
                  'snippet.title': title,
                  'status.privacyStatus': listing,
-      }, 'mediaFilename': `${filePath}/zoom.mp4`}, videosInsert);
+      }, 'mediaFilename': `${appPath}/zoom.mp4`}, videosInsert);
   });
 });
 
@@ -137,14 +155,14 @@ const createResource = (properties) => {
   return resource;
 }
 
-const videosInsert = (auth, requestData) => {
+function videosInsert(auth, requestData) {
   const service = google.youtube('v3');
   const parameters = requestData['params'];
   parameters['auth'] = auth;
   parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
   parameters['notifySubscribers'] = false;
   parameters['resource'] = createResource(requestData['properties']);
-  let req = service.videos.insert(parameters, (err, data) => {
+  const req = service.videos.insert(parameters, function(err, data) {
     if (err) {
       console.log('The API returned an error: ' + err);
     }
@@ -157,10 +175,14 @@ const videosInsert = (auth, requestData) => {
         sound: true
       });
     }
-    process.exit();
+    clearInterval(id);
+    process.stdout.clearLine();
+    process.stdout.write('\nwatching...\n')
+    //process.exit();
   });
+
   const fileSize = fs.statSync(requestData['mediaFilename']).size;
-  const id = setInterval(() => {
+  const id = setInterval(function () {
     const uploadedBytes = req.req.connection._bytesDispatched;
     const uploadedMBytes = uploadedBytes / 1000000;
     const progress = uploadedBytes > fileSize

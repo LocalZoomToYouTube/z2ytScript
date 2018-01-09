@@ -1,5 +1,6 @@
 # z2ytScript
 
+#### npm run node
 
 
 ## How to authorize youtube api
