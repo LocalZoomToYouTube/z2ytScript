@@ -1,5 +1,7 @@
 # z2ytScript
 
+
+#### npm install forever -g
 #### npm run node
 
 

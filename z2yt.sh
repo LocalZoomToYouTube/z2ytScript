@@ -1,4 +1,6 @@
 #!/bin/sh
+printf '\e[1t'
+printf '\e[5t'
 echo "\nEnter Title"
 read NAME
 echo "title: $NAME" > /Users/$USER/.zoom_to_youtube/upload.txt
